@@ -49,5 +49,11 @@ Ready to deploy your edge application? Let’s get started!
    contribution/CODE_OF_CONDUCT
    contribution/WALL_OF_FAME
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Troubleshooting
+
+   troubleshooting/FAQ
+
 * :ref:`genindex`
 
