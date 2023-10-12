@@ -60,7 +60,13 @@ def install_ncc_python(version: str = "1.7.1", python: str = "38"):
     save_file = os.path.join(NCC_PATH, os.path.basename(file_download))
     if not os.path.exists(save_file):
         print("Downloading from", file_download)
-        urllib.request.urlretrieve(file_download, save_file)
+        try:
+            import ssl
+            ssl._create_default_https_context = ssl._create_unverified_context
+            urllib.request.urlretrieve(file_download, save_file)
+        except Exception as e:
+            print("Error downloading file", file_download)
+            raise e
         os.system("python3 -m pip install {}".format(save_file))
 
 
@@ -135,7 +141,7 @@ def convert_to_kmodel_python(tflite_path: str, options: dict = {"target": "k210"
                              tool_options={"nncase_version": "1.9.0", "python_version": "3.9"}, verbose=False) -> str:
     try:
         import nncase
-    except:
+    except ModuleNotFoundError as e:
         install_ncc_python(version=tool_options["nncase_version"], python=tool_options["python_version"])
         import nncase
 

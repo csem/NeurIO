@@ -80,7 +80,7 @@ nbconvert==7.7.4
 nbformat==5.9.2
 nbsphinx==0.8.7
 nest-asyncio==1.5.7
-nncase==1.9.0.20230322
+#nncase==1.9.0.20230322
 notebook==7.0.2
 notebook_shim==0.2.3
 numpy==1.23.3
