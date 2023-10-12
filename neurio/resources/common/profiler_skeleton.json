@@ -1,0 +1,41 @@
+{
+  "version": [],
+  "model_datetime": null,
+  "compile_datetime": null,
+  "inputs": [
+    {
+      "name": null,
+      "shape": []
+    }
+  ],
+  "outputs": [
+    {
+      "name": null,
+      "shape": []
+    }
+  ],
+  "weights": null,
+  "activations": null,
+  "macc": null,
+  "runtime": {
+    "name": null,
+    "version": [],
+    "tools_version": {
+    }
+  },
+  "device": {
+    "dev_type": null,
+    "desc": null,
+    "dev_id": null,
+    "system": null,
+    "sys_clock": null,
+    "bus_clock": null,
+    "attrs": []
+  },
+  "model_name": null,
+  "model_type": null,
+  "device_name": null,
+  "batch_size": null,
+  "c_duration": null,
+  "predictions": []
+}

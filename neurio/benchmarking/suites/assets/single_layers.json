@@ -1,0 +1,1081 @@
+{
+  "description": "+------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Block            | Config-1              | Config-2              | Config-3              | Config-4              |\n    +==================+=======================+=======================+=======================+=======================+\n    | Convolutional 1D | filters 32, stride 1  | filters 32, stride 2  | filters 64, stride 1  | filters 64, stride 2  |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Convolutional 2D | filters 32, stride 1  | filters 32, stride 2  | filters 64, stride 1  | filters 64, stride 2  |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Convolutional 2D | filters 32, 1x1       | filters 32, 3x3       | filters 32, 5x5      | filters 64, 7x7        |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Depthwise 2D conv| filters 32, stride 1  | filters 32, stride 2  | filters 64, stride 1  | filters 64, stride 2  |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Convolutional 3D | filters 32, stride 1  | filters 32, stride 2  | filters 64, stride 1  | filters 64, stride 2  |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Fully connected  | 128-32 neurons        | 256-64 neurons        | 512-128 neurons       | 1024-256 neurons      |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | AvgPooling1D     | 2, stride 1           | 2, stride 2           | 4, stride 2           | 7, stride 1           |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | AvgPooling2D     | 2x2, stride 1         | 2x2, stride 2         | 4x4, stride 2         | 7x7, stride 1         |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | MaxPooling1D     | 2, stride 1           | 2, stride 2           | 4, stride 2           | 7, stride 1           |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | MaxPooling2D     | 2x2, stride 1         | 2x2, stride 2         | 4x4, stride 2         | 7x7, stride 1         |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Activation       | ReLU                  | Sigmoid               | ReLU6                 | Tanh                  |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Batch norm       | 1D                    | 2D                    | 3D                    | 4D                    |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Reshape          | 1D                    | 2D                    | 3D                    | 4D                    |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Padding 1D       | Zero                  | Constant              | Reflect               | Symmetric             |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n    | Padding 2D       | Zero                  | Constant              | Reflect               | Symmetric             |\n    +------------------+-----------------------+-----------------------+-----------------------+-----------------------+",
+  "configurations": [
+    [
+      {
+        "Block": "Convolutional 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "Conv1D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "Conv1D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 2,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "Conv1D",
+            "Parameters": {
+              "filters": 64,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "Conv1D",
+            "Parameters": {
+              "filters": 64,
+              "kernel_size": 3,
+              "strides": 2,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Convolutional 2D - Stride",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "Conv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 2D - Stride",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "Conv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 2,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 2D - Stride",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "Conv2D",
+            "Parameters": {
+              "filters": 64,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 2D - Stride",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "Conv2D",
+            "Parameters": {
+              "filters": 64,
+              "kernel_size": 3,
+              "strides": 2,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Convolutional 2D - Kernel",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "Conv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 1,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 2D - Kernel",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "Conv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 2D - Kernel",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "Conv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 5,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 2D - Kernel",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "Conv2D",
+            "Parameters": {
+              "filters": 64,
+              "kernel_size": 7,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Depthwise 2D Convolutional",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "DepthwiseConv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Depthwise 2D Convolutional",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "DepthwiseConv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 2,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Depthwise 2D Convolutional",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "DepthwiseConv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Depthwise 2D Convolutional",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "DepthwiseConv2D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 2,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Convolutional 3D",
+        "Dim": 4,
+        "Input_shape": [
+          32,
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "Conv3D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 3D",
+        "Dim": 4,
+        "Input_shape": [
+          32,
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "Conv3D",
+            "Parameters": {
+              "filters": 32,
+              "kernel_size": 3,
+              "strides": 2,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 3D",
+        "Dim": 4,
+        "Input_shape": [
+          32,
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "Conv3D",
+            "Parameters": {
+              "filters": 64,
+              "kernel_size": 3,
+              "strides": 1,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Convolutional 3D",
+        "Dim": 4,
+        "Input_shape": [
+          32,
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "Conv3D",
+            "Parameters": {
+              "filters": 64,
+              "kernel_size": 3,
+              "strides": 2,
+              "padding": "same",
+              "activation": "relu"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Fully Connected",
+        "Dim": 1,
+        "Input_shape": [
+          128
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "Dense",
+            "Parameters": {
+              "units": 32,
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Fully Connected",
+        "Dim": 1,
+        "Input_shape": [
+          256
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "Dense",
+            "Parameters": {
+              "units": 64,
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Fully Connected",
+        "Dim": 1,
+        "Input_shape": [
+          512
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "Dense",
+            "Parameters": {
+              "units": 128,
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Fully Connected",
+        "Dim": 1,
+        "Input_shape": [
+          1024
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "Dense",
+            "Parameters": {
+              "units": 256,
+              "activation": "relu"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Average Pooling 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "AveragePooling1D",
+            "Parameters": {
+              "pool_size": 2,
+              "strides": 1,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Average Pooling 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "AveragePooling1D",
+            "Parameters": {
+              "pool_size": 2,
+              "strides": 2,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Average Pooling 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "AveragePooling1D",
+            "Parameters": {
+              "pool_size": 4,
+              "strides": 2,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Average Pooling 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "AveragePooling1D",
+            "Parameters": {
+              "pool_size": 7,
+              "strides": 1,
+              "padding": "same"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Average Pooling 2D",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "AveragePooling2D",
+            "Parameters": {
+              "pool_size": 2,
+              "strides": 1,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Average Pooling 2D",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "AveragePooling2D",
+            "Parameters": {
+              "pool_size": 2,
+              "strides": 2,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Average Pooling 2D",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "AveragePooling2D",
+            "Parameters": {
+              "pool_size": 4,
+              "strides": 2,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Average Pooling 2D",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "AveragePooling2D",
+            "Parameters": {
+              "pool_size": 7,
+              "strides": 1,
+              "padding": "same"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Max Pooling 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "MaxPooling1D",
+            "Parameters": {
+              "pool_size": 2,
+              "strides": 1,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Max Pooling 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "MaxPooling1D",
+            "Parameters": {
+              "pool_size": 2,
+              "strides": 2,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Max Pooling 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "MaxPooling1D",
+            "Parameters": {
+              "pool_size": 4,
+              "strides": 2,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Max Pooling 1D",
+        "Dim": 2,
+        "Input_shape": [
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "MaxPooling1D",
+            "Parameters": {
+              "pool_size": 7,
+              "strides": 1,
+              "padding": "same"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Max Pooling 2D",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "MaxPooling2D",
+            "Parameters": {
+              "pool_size": 2,
+              "strides": 1,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Max Pooling 2D",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "MaxPooling2D",
+            "Parameters": {
+              "pool_size": 2,
+              "strides": 2,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Max Pooling 2D",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "MaxPooling2D",
+            "Parameters": {
+              "pool_size": 4,
+              "strides": 2,
+              "padding": "same"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Max Pooling 2D",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "MaxPooling2D",
+            "Parameters": {
+              "pool_size": 7,
+              "strides": 1,
+              "padding": "same"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Activation",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "Activation",
+            "Parameters": {
+              "activation": "relu"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Activation",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "Activation",
+            "Parameters": {
+              "activation": "sigmoid"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Activation",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "Activation",
+            "Parameters": {
+              "activation": "relu6"
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Activation",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "Activation",
+            "Parameters": {
+              "activation": "tanh"
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Batch Norm",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "BatchNormalization",
+            "Parameters": {
+              "axis": 1
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Batch Norm",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "BatchNormalization",
+            "Parameters": {
+              "axis": 2
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Batch Norm",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "BatchNormalization",
+            "Parameters": {
+              "axis": 3
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Batch Norm",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "BatchNormalization",
+            "Parameters": {
+              "axis": 4
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Block": "Reshape",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-1",
+        "Layers": [
+          {
+            "Layer": "Reshape",
+            "Parameters": {
+              "target_shape": [
+                1024,
+                3
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Reshape",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-2",
+        "Layers": [
+          {
+            "Layer": "Reshape",
+            "Parameters": {
+              "target_shape": [
+                3072
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Reshape",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-3",
+        "Layers": [
+          {
+            "Layer": "Reshape",
+            "Parameters": {
+              "target_shape": [
+                32,
+                3,
+                32
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "Block": "Reshape",
+        "Dim": 3,
+        "Input_shape": [
+          32,
+          32,
+          3
+        ],
+        "Config": "Config-4",
+        "Layers": [
+          {
+            "Layer": "Reshape",
+            "Parameters": {
+              "target_shape": [
+                16,
+                32,
+                3,
+                2
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  ]
+}
