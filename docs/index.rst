@@ -23,7 +23,6 @@ Ready to deploy your edge application? Let’s get started!
    basics/installation
    basics/getting_started
    basics/generic_deployment
-   basics/results_handling
 
 .. .. toctree::
    :maxdepth: 1
