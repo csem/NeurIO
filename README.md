@@ -17,7 +17,7 @@ ANDANTE European Project, with the goal of democratizing AI accelerators for edg
 To use NeurIO, clone the current release:
 
 ```
-$ git clone [this project]
+$ git clone https://github.com/csem/neurio
 ```
 
 Then, install the dependencies:
