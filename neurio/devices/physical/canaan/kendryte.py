@@ -230,19 +230,6 @@ class K210(Device):
 
         return preprocessed_data
 
-    def __subsample_data__(self, input_x, batch_size: int, batch_index: int):
-        """
-        Subsample a batch of data from the dataset.
-
-        :param data: the dataset
-        :param batch_size: the batch size
-        :param batch_index: the index of the batch
-        :return: the batch of data
-        """
-        start_index = batch_index * batch_size
-        end_index = start_index + batch_size
-        return input_x[start_index:end_index]
-
     def __transfer_data_to_memory__(self, input_x):
         """
         Transfer the data to the device memory.
@@ -436,7 +423,6 @@ class K210(Device):
         if self.verbose > 0: print(self.rshell_session.before.decode().strip())
         self.rshell_session.expect(">", timeout=10)
         if self.verbose > 0: print(self.rshell_session.before.decode().strip())
-
 
     def __reset_device__(self):
         """

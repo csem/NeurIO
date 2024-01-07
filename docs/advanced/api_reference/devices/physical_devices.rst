@@ -13,13 +13,20 @@ ______
 STMicrolectronics
 _________________
 
-Coming SOON
-
-.. .. autoclass:: neurio.devices.physical.stmicroelectronics.stm.STMDevice
+..  autoclass:: neurio.devices.physical.st.stm32.STM32
+    :inherited-members:
     :members:
+    :private-members:
     :undoc-members:
 
-SynSense
-________
+..  autoclass:: neurio.devices.physical.st.stm32.STM32L4R9
+    :inherited-members:
+    :members:
+    :private-members:
+    :undoc-members:
 
-Coming SOON  TODO
+..  autoclass:: neurio.devices.physical.st.stm32.NUCLEOH723ZG
+    :inherited-members:
+    :members:
+    :private-members:
+    :undoc-members:

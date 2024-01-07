@@ -24,12 +24,12 @@ Ready to deploy your edge application? Let’s get started!
    basics/getting_started
    basics/generic_deployment
 
-.. .. toctree::
+.. toctree::
    :maxdepth: 1
    :caption: Supported Platforms
+
    supported_devices/canaan
    supported_devices/stmicroelectronics
-   supported_devices/synsense
 
 .. toctree::
    :maxdepth: 1

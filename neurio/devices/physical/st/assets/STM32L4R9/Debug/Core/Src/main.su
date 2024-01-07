@@ -1,0 +1,4 @@
+../Core/Src/main.c:114:6:SystemClock_Config	96	static,ignoring_inline_asm
+../Core/Src/main.c:68:5:main	72	static,ignoring_inline_asm
+../Core/Src/main.c:196:6:MX_USART2_UART_Init	8	static,ignoring_inline_asm
+../Core/Src/main.c:614:6:Error_Handler	0	static,ignoring_inline_asm
