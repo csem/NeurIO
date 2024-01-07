@@ -14,6 +14,8 @@ ANDANTE European Project, with the goal of democratizing AI accelerators for edg
 
 ## Install
 
+*Note: Only Python **3.9** is currently supported.*
+
 To use NeurIO, clone the current release:
 
 ```

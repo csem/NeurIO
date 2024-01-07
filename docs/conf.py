@@ -44,6 +44,7 @@ extensions = [
     "sphinx_rtd_theme",
     'sphinx_markdown_tables',
     'sphinxcontrib.mermaid',
+    'sphinx_sitemap'
 ]
 
 source_suffix = {
@@ -82,6 +83,10 @@ html_static_path = ["_static"]
 html_css_files = [
     "css/custom.css",
 ]
+
+html_baseurl = 'https://neurio.org/docs/'
+
+
 
 autosummary_generate = True
 

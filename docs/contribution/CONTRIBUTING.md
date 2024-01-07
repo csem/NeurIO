@@ -13,7 +13,7 @@ Make sure to check our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Getting started
 
-If you would like to contribute to NeurIO, then you should begin by fork the public repositiory, and clone it on your
+If you would like to contribute to NeurIO, then you start by forking the public repositiory, and download it to your
 development machine.
 
 ```bash
@@ -35,7 +35,8 @@ or
 
 ## Adding a feature
 
-The main branch is ``development``. You should commit your modification to a new feature branch.
+You should commit your modification to a new feature branch.
+Pull request will be merged into the``development`` branch.
 
 ```bash
     git checkout -b feature/my-feature

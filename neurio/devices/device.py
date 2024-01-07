@@ -110,7 +110,6 @@ class Device():
         """
         raise NotImplementedError()
 
-    @abstractmethod
     def __subsample_data__(self, input_x, batch_size: int, batch_index: int):
         """
         Subsample the data to fit the device memory.
@@ -120,7 +119,9 @@ class Device():
         :param batch_index: index of the batch
         :return: a batch of the subsampled data
         """
-        raise NotImplementedError()
+        start_index = batch_index * batch_size
+        end_index = start_index + batch_size
+        return input_x[start_index:end_index]
 
     @abstractmethod
     def __transfer_data_to_memory__(self, input_x):
