@@ -8,7 +8,14 @@ opencv-python==4.9.0.80
 pandoc==2.3
 pandocfilters==1.5.0
 pexpect==4.9.0
-protobuf==3.19.4
+#protobuf==3.19.4
+
+# requirements for edgetpu
+pycoral @ https://github.com/google-coral/pycoral/releases/download/v2.0.0/pycoral-2.0.0-cp39-cp39-macosx_10_15_x86_64.whl; sys_platform == 'darwin'
+tflite_runtime @ https://github.com/google-coral/pycoral/releases/download/v2.0.0/tflite_runtime-2.5.0.post1-cp39-cp39-macosx_10_15_x86_64.whl; sys_platform == 'darwin'
+
+
+
 Pillow==9.2.0
 psutil==5.9.7
 pycocotools==2.0.7

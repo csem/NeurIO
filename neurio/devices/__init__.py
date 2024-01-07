@@ -7,3 +7,4 @@ from .stmicroelectronics import STMDevice
 from .virtual.tflite import TFLiteDevice
 from .virtual.virtual_device import VirtualDevice
 """
+from .device import Device

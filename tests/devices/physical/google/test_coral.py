@@ -1,16 +1,17 @@
 #!/user/bin/env python
 
-import numpy as np
-from tensorflow.keras import layers, models
-from devices.physical.st.stm32 import NUCLEOH723ZG,STM32
-import os
+"""
+Author: Simon Narduzzi
+Email: simon.narduzzi@csem.ch
+Copyright: CSEM, 2023
+Creation: 07.01.2024
+Description: TODO
+"""
 
-# for MacOS
-user = os.environ["USER"]
-os.environ["STM32CUBEPROGRAMER_CLI_PATH"] = os.path.expanduser(
-    "/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI")
-os.environ["X_CUBE_AI_PATH"] = os.path.expanduser(f"/Users/{user}/STM32Cube/Repository/Packs/STMicroelectronics/X-CUBE-AI/7.1.0")
-os.environ["STM32CUBEIDE_PATH"] = os.path.expanduser("/Applications/STM32CubeIDE.app/Contents/MacOS/STM32CubeIDE")
+import numpy as np
+from devices.physical.google.coral import EdgeTPU
+import os
+from tensorflow.keras import layers, models
 
 def lenet_5():
     model = models.Sequential()
@@ -24,12 +25,11 @@ def lenet_5():
     model.add(layers.Dense(4, activation='softmax'))
     return model
 
-def test_stm_pipeline():
-    device = "NUCLEO-H723ZG"
+def test_edgeTPU_pipeline():
     input_data = np.random.random((10, 32, 32, 1))
     model = lenet_5()
 
-    device = STM32(port="serial", device_identifier=device, log_dir=None)
+    device = EdgeTPU(port=None, log_dir=None)
     device.prepare_for_inference(model=model)
     predictions = device.predict(input_x=input_data, batch_size=2)
     print(predictions)
