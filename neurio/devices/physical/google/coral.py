@@ -7,17 +7,20 @@ Copyright: CSEM, 2023
 Creation: 07.01.2024
 Description: Google Coral TPU device
 """
-import pycoral
+
+from pycoral.utils.dataset import read_label_file
+from pycoral.utils.edgetpu import make_interpreter
 from pycoral.adapters import common
-import tensorflow as tf
 from neurio.devices.device import Device
 import os
 import warnings
 import numpy as np
-
-
+from neurio.benchmarking.profiler import Profiler
+import platform
+import tensorflow as tf
+import tflite_runtime as tflite
 import sys
-
+import time
 
 class EdgeTPU(Device):
     def __init__(self, port: any = "serial", device_identifier: str = "edgetpu", name: str = "edgetpu",
@@ -30,16 +33,16 @@ class EdgeTPU(Device):
     def __check_env__(self):
         os.system()
 
-    def __prepare_model__(self, model: tf.keras.models.Model, quantize=False, calibration_inputs=None):
+    def __prepare_model__(self, model, quantize=False, calibration_inputs=None):
         # save in logdir
-        self.model_path = os.path.join(self.log_dir, "model.h5")
-        self.tflite_path = os.path.join(self.log_dir, "model.tflite")
+        self.model_path = os.path.join(self.log_dir, model.name)
+        self.tflite_path = os.path.join(self.log_dir, f"{model.name}.tflite")
 
         # save model
         model.save(self.model_path)
 
         # convert to tflite
-        converter = tf.lite.TFLiteConverter.from_keras_model(self.model_path)
+        converter = tf.lite.TFLiteConverter.from_saved_model(self.model_path)
         converter.optimizations = [tf.lite.Optimize.DEFAULT]
 
         if quantize and calibration_inputs is None:
@@ -49,9 +52,6 @@ class EdgeTPU(Device):
             converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
             converter.inference_input_type = tf.uint8
             converter.inference_output_type = tf.uint8
-
-            self.model_quantize_mean = np.mean(calibration_inputs)
-            self.model_quantize_std = np.std(calibration_inputs)
 
         tflite_model = converter.convert()
         # Save the TFLite model
@@ -63,7 +63,18 @@ class EdgeTPU(Device):
         pass
 
     def __deploy_model__(self):
-        self.interpreter = pycoral.utils.edgetpu.make_interpreter(self.tflite_path)
+        sys.path.append("/usr/local/lib/")
+        delegate = {'Linux': 'libedgetpu.so.1',  # install https://coral.ai/software/#edgetpu-runtime
+                    'Darwin': 'libedgetpu.1.dylib',
+                    'Windows': 'edgetpu.dll'}[platform.system()]
+        #interpreter = make_interpreter(self.tflite_path)
+        import tflite_runtime.interpreter as tflite_runtime
+        delegate = tflite_runtime.Delegate(os.path.join("/usr","local", "lib", "libedgetpu.1.dylib"))
+        interpreter = tflite_runtime.Interpreter(
+            model_path=self.tflite_path,
+            experimental_delegates=[delegate])
+
+        self.interpreter = interpreter
         self.interpreter.allocate_tensors()
         self.model_input_size = common.input_size(self.interpreter)
         self.model_quantize_params = common.input_details(self.interpreter, 'quantization_parameters')
@@ -75,35 +86,56 @@ class EdgeTPU(Device):
 
     def __prepare_data__(self, input_x, **kwargs):
         new_x = []
+        self.model_quantize_mean = np.mean(input_x)
+        self.model_quantize_std = np.std(input_x)
+
         for image in input_x:
-            if abs(self.model_quantize_scale * self.model_quantize_std - 1) < 1e-5 and abs(
-                    self.model_quantize_mean - self.model_quantize_zero_point) < 1e-5:
-                # Input data does not require preprocessing.
-                new_x.append(image)
+            if self.model_quantize_params['quantized_dimension'] != 0:
+                if abs(self.model_quantize_scale * self.model_quantize_std - 1) < 1e-5 and abs(
+                        self.model_quantize_mean - self.model_quantize_zero_point) < 1e-5:
+                    # Input data does not require preprocessing.
+                    new_x.append(image)
+                else:
+                    # Input data requires preprocessing
+                    normalized_image = np.asarray(image).astype(np.float32) - self.model_quantize_mean
+                    normalized_image /= (self.model_quantize_std * self.model_quantize_scale)
+                    normalized_image += self.model_quantize_zero_point
+
+                    np.clip(normalized_image, 0, 255, out=normalized_image)
+                    new_x.append(normalized_image.astype(np.uint8))
             else:
-                # Input data requires preprocessing
-                normalized_input = (np.asarray(image) - self.model_quantize_mean) / (
-                            self.model_quantize_std * self.model_quantize_scale) + elf.model_quantize_zero_point
-                normalized_input = np.clip(normalized_input, 0, 255)
-                new_x.append(normalized_input.astype(np.uint8))
+                new_x.append(image)
         return new_x
 
     def __transfer_data_to_memory__(self, input_x):
         if len(input_x) != 1:
             raise ValueError("EdgeTPU devices only support batch size 1")
         # copy data to memory
-        common.set_input(self.interpreter, input_x)
+        start = time.perf_counter()
+        common.set_input(self.interpreter, input_x[0])
+        self.transfer_time = time.perf_counter() - start
 
     def __run_inference__(self, profile: bool = True):
         start = time.perf_counter()
         self.interpreter.invoke()
-        inference_time = time.perf_counter() - start
+        self.inference_time = time.perf_counter() - start
 
     def __read_inference_results__(self):
         # readout
         predictions = self.interpreter.get_tensor(self.interpreter.get_output_details()[0]['index'])  # get tensor
-        profiler_results = None
-        return predictions, profiler_results
+
+        # create lists for
+        inference = self.inference_time
+        load = self.transfer_time
+        preprocess = 0  # no preprocessing happening on board
+
+        # store in profile as lists of 1 batch
+        temp_profiler = Profiler()
+        temp_profiler.inference_times = [inference]
+        temp_profiler.load_times = [load]
+        temp_profiler.preprocess_times = [preprocess]
+
+        return predictions, temp_profiler
 
     def is_alive(self, timeout: int = 20) -> bool:
         pass

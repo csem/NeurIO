@@ -12,9 +12,9 @@ from neurio.devices.device import Device
 import json
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import Model, Sequential
-from tensorflow.keras.layers import Conv1D, Conv2D, Conv3D, DepthwiseConv2D, Dense, AveragePooling1D, AveragePooling2D, \
-    MaxPooling1D, MaxPooling2D, Activation, BatchNormalization, Reshape, ZeroPadding1D, ZeroPadding2D, Activation
+#from tensorflow.keras import Model, Sequential
+#from tensorflow.keras.layers import Conv1D, Conv2D, Conv3D, DepthwiseConv2D, Dense, AveragePooling1D, AveragePooling2D, \
+ #   MaxPooling1D, MaxPooling2D, Activation, BatchNormalization, Reshape, ZeroPadding1D, ZeroPadding2D, Activation
 
 
 class Benchmark:

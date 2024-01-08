@@ -27,9 +27,9 @@ def lenet_5():
 
 def test_edgeTPU_pipeline():
     input_data = np.random.random((10, 32, 32, 1))
-    model = lenet_5()
 
     device = EdgeTPU(port=None, log_dir=None)
+    model = lenet_5()
     device.prepare_for_inference(model=model)
-    predictions = device.predict(input_x=input_data, batch_size=2)
+    predictions = device.predict(input_x=input_data, batch_size=1)
     print(predictions)

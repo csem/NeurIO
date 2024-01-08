@@ -11,7 +11,6 @@ import os
 from abc import ABC, abstractmethod
 import json
 
-import keras
 import numpy as np
 import sys
 import tensorflow as tf
@@ -49,7 +48,7 @@ class Device():
 
     # SYSTEM PREPARATION
     @abstractmethod
-    def __prepare_model__(self, model: tf.keras.models.Model, **kwargs):
+    def __prepare_model__(self, model, **kwargs):
         """
         Prepare the model by following all the opitimization steps required by the device, and stores it.
 
@@ -85,7 +84,7 @@ class Device():
         """
         raise NotImplementedError()
 
-    def prepare_for_inference(self, model: tf.keras.models.Model, **kwargs):
+    def prepare_for_inference(self, model, **kwargs):
         """
         Prepare the device for inference. This function should be called before any inference.
 

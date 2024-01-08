@@ -1,6 +1,5 @@
 #!/user/bin/env python
 
-import pytest
 import tensorflow as tf
 import os
 from sklearn.metrics import balanced_accuracy_score

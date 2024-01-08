@@ -8,7 +8,7 @@ Creation: 26.04.23
 Description: Pipeline for MNIST dataset
 """
 
-import keras
+
 import numpy as np
 import tensorflow as tf
 from pycocotools.coco import COCO

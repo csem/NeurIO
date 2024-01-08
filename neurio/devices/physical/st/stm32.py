@@ -8,9 +8,7 @@ Creation: 05.01.2024
 Description: TODO
 """
 import warnings
-
 import tensorflow as tf
-
 from neurio.devices.device import Device
 import os
 import sys
@@ -59,7 +57,7 @@ class STM32(Device):
         self.cube_ide_path = os.environ["STM32CUBEIDE_PATH"]
         sys.path.append(self.stm32ai_running_lib_path)
 
-    def __prepare_model__(self, model: tf.keras.models.Model, **kwargs):
+    def __prepare_model__(self, model, **kwargs):
         self.original_model = model
         #self.model_path = os.path.join(self.log_dir, "original_model.h5")
         #self.original_model.save(self.model_path)
