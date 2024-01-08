@@ -8,12 +8,8 @@ Creation: 17.10.23
 Description: TODO
 """
 
-import os
-import pytest
-
-from neurio.tasks.task import Task
 from neurio.tasks.classification.keyword_spotting import SpeechCommands
-import tensorflow_datasets as tfds
+#import tensorflow_datasets as tfds
 
 # create a testsuite
 def test_speech_commands():

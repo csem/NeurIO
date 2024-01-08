@@ -51,7 +51,7 @@ predictions = device.predict(input_x=input_data, batch_size=2)
 
 #### Execution process
 
-The execution process for STM32 M4 and M7 families are as follows:
+The execution process for STM32 M4 and M7 families is as follows:
 
 ```{mermaid}
 %%{init: {'theme':'dark'}}%%

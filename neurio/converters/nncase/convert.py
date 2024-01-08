@@ -13,6 +13,7 @@ import os
 import argparse
 
 import numpy as np
+import tensorflow as tf
 
 
 def read_model_file(model_file):
@@ -31,7 +32,6 @@ def convert(args):
     if "tflite" in filename:
         name = filename.split('.tflite')[0]
         # read TFLITE model and extract input shape
-        import tensorflow as tf
         interpreter = tf.lite.Interpreter(model_path=model)
         interpreter.allocate_tensors()
         input_details = interpreter.get_input_details()

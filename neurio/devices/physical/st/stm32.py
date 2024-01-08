@@ -8,9 +8,7 @@ Creation: 05.01.2024
 Description: TODO
 """
 import warnings
-
 import tensorflow as tf
-
 from neurio.devices.device import Device
 import os
 import sys
@@ -30,8 +28,7 @@ ASSETS_DIR = os.path.join(os.path.dirname(__file__), "assets")
 
 
 class STM32(Device):
-    def __init__(self, port: any, device_identifier: str,
-                 name: str = "k210",
+    def __init__(self, port: any = "serial", device_identifier: str = "STM32", name: str = "STM32Base",
                  log_dir: str = None, **kwargs):
 
         super().__init__(port, name, log_dir, **kwargs)
@@ -60,7 +57,7 @@ class STM32(Device):
         self.cube_ide_path = os.environ["STM32CUBEIDE_PATH"]
         sys.path.append(self.stm32ai_running_lib_path)
 
-    def __prepare_model__(self, model: tf.keras.models.Model, **kwargs):
+    def __prepare_model__(self, model, **kwargs):
         self.original_model = model
         #self.model_path = os.path.join(self.log_dir, "original_model.h5")
         #self.original_model.save(self.model_path)
@@ -141,7 +138,7 @@ class STM32(Device):
         command = " ".join([self.programmer_cli_path, '-c', 'port=SWD', '-rst', '-s', '-hardRst'])
         os.system(command)
         if self.verbose > 0: print("Device reset")
-
+        time.sleep(2)
         self.__connect_runner()
 
     def __prepare_data__(self, input_x, **kwargs):
@@ -157,10 +154,9 @@ class STM32(Device):
                 "stm_ai_runner not found, please set the X_CUBE_AI_PATH environment variable to the path of X-CUBE-AI")
 
         runner = AiRunner(debug=True)
-        port = "serial"
         # Connect to device
-        if not runner.connect("serial"):
-            raise RuntimeError('runtime "{}" is not connected'.format(port))
+        if not runner.connect(self.port):
+            raise RuntimeError('runtime "{}" is not connected'.format(self.port))
         print(runner, flush=True)
         runner.summary()
         self.runner = runner
@@ -193,12 +189,11 @@ class STM32(Device):
 
 
 class STM32L4R9(STM32):
-    def __init__(self, port: any, name: str = "STM32L4R9I-DISCO",
-                 log_dir: str = None, **kwargs):
-        super().__init__(port, "STM32L4R9", name, log_dir, **kwargs)
+    def __init__(self, port: any = "serial", name: str = "STM32L4R9I-DISCO", log_dir: str = None, **kwargs):
+        super().__init__(port=port, device_identifier="STM32L4R9", name=name, log_dir=log_dir)
 
 
 class NUCLEOH723ZG(STM32):
-    def __init__(self, port: any, name: str = "NUCLEO-H723ZG",
+    def __init__(self, port: any = "serial", name: str = "NUCLEO-H723ZG",
                  log_dir: str = None, **kwargs):
-        super().__init__(port, "NUCLEO-H723ZG", name, log_dir, **kwargs)
+        super().__init__(port=port, device_identifier="NUCLEO-H723ZG", name=name, log_dir=log_dir)
