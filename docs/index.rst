@@ -30,6 +30,7 @@ Ready to deploy your edge application? Let’s get started!
 
    supported_devices/canaan
    supported_devices/stmicroelectronics
+   supported_devices/google
 
 .. toctree::
    :maxdepth: 1

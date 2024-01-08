@@ -136,7 +136,6 @@ class SpeechCommands(Task):
         # read the wav files and create the dataset
         import librosa
         import numpy as np
-        import tqdm
         import tensorflow as tf
 
         def read_wav_file(file):

@@ -66,4 +66,4 @@ open-source software development.**
 
 ## License
 
-GNU General Public License (GPL), version 3 : [GPLv3](LICENSE)
+GNU General Public License (GPL), version 3 : [GPLv3](LICENSE.md)

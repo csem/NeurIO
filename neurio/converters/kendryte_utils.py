@@ -17,6 +17,7 @@ import contextlib
 import numpy as np
 import sys
 import io
+import tensorflow as tf
 
 NCC_PATH = os.path.join(os.path.dirname(__file__), "ncc")
 if not os.path.exists(NCC_PATH):
@@ -168,7 +169,6 @@ def convert(tflite_path, options, verbose=False):
     if "tflite" in filename:
         name = filename.split('.tflite')[0]
         # read TFLITE model and extract input shape
-        import tensorflow as tf
         interpreter = tf.lite.Interpreter(model_path=model)
         interpreter.allocate_tensors()
         input_details = interpreter.get_input_details()

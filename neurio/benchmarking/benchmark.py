@@ -15,7 +15,7 @@ from neurio.tasks import ImageNetClassification
 from neurio.tasks import NMNISTClassification
 from neurio.tasks import SHDClassification
 from neurio.tasks import MNISTClassification
-from .tflite import TFLiteDevice
+#from .tflite import TFLiteDevice
 from common import Benchmarking
 from neurio.devices.physical.stmicroelectronics import STMDevice
 from neurio.devices.physical.canaan import K210Device

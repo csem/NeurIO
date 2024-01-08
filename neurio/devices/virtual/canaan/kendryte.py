@@ -14,20 +14,17 @@ import sys
 
 sys.path.append("../../")
 sys.path.append("../../../../")
-import keras
-from neurio.common import Prediction
+
 from neurio.devices.device import Device
 import os
 from tqdm import tqdm
-import torch
 import numpy as np
 import json
 from PIL import Image
 from neurio.converters.kendryte_utils import convert_to_kmodel, simulate
 from neurio.converters.tflite_utils import keras_to_tflite
-from neurio.helpers import check_profiler, NpEncoder
+from neurio.helpers import NpEncoder
 import tensorflow as tf
-from multiprocessing import Pool
 from neurio.exceptions import InvalidImageRangeError
 from neurio.benchmarking.profiler import Profiler
 

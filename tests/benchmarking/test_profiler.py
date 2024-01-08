@@ -1,9 +1,6 @@
 #!/user/bin/env python
 
-import pytest
-
 from neurio.benchmarking.profiler import Profiler
-import datetime
 import tensorflow as tf
 
 def test_merge():
