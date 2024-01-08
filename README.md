@@ -3,7 +3,7 @@
 </div>
 
 # Welcome to NeurIO!
-[NeurIO](https://www.neurio.org/) is an end-to-end open source platform
+[NeurIO](https://www.neurio.org/) is an end-to-end open source Python library
 for benchmarking embedded machine learning. It a comprehensive and flexible tool for 
 deploying neural networks on embedded devices, that lets
 researchers push the state-of-the-art in low-power ML and developers easily build and
