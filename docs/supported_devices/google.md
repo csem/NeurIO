@@ -1,4 +1,4 @@
-# ST Platforms
+# Google Platforms
 
 ## List of supported platforms
 Few platforms from Canaan are supported, including:
