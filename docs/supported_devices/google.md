@@ -1,7 +1,7 @@
 # Google Platforms
 
 ## List of supported platforms
-Few platforms from Canaan are supported, including:
+The following platform from Google is compatible with NeurIO:
 
 | Platform       | Processor     | Description          | Status    | Firmware | Tools version                  |
 |----------------|---------------|----------------------|-----------|----------|--------------------------------|

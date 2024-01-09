@@ -1,7 +1,7 @@
 # ST Platforms
 
 ## List of supported platforms
-Few platforms from Canaan are supported, including:
+Some platforms from STMicroelectronics are supported, including:
 
 | Platform       | Processor     | Description                      | Status    | Firmware | Tools version                                                             |
 |----------------|---------------|----------------------------------|-----------|----------|---------------------------------------------------------------------------|
