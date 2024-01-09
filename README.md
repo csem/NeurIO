@@ -3,11 +3,11 @@
 </div>
 
 # Welcome to NeurIO!
-[NeurIO](https://www.neurio.org/) is an end-to-end open source Python library
-for benchmarking embedded machine learning. It a comprehensive and flexible tool for 
-deploying neural networks on embedded devices, that lets
-researchers push the state-of-the-art in low-power ML and developers easily build and
-deploy ML-powered applications for IoT.
+[NeurIO](https://www.neurio.org/) is anopen source Python library
+for deploying deep neural networks on embedded (edge) devices. It a comprehensive and flexible tool for 
+deploying neural networks on embedded (edge) devices, that lets
+researchers push the state-of-the-art in low-power machine learning and developers easily build and
+test neural networks for IoT.
 
 NeurIO was originally developed by researchers and engineers working in the
 ANDANTE European Project, with the goal of democratizing AI accelerators for edge devices.
