@@ -44,6 +44,11 @@ You can import the Google Coral EdgeTPU device from the `devices.google.coral` m
 For example, you can run the following code:
 
 ```python
+# import the PyCoral at first line of the script to bypass the official interpreter,
+#even if it is not used in this script. This imports the wrapper for the interpreter of PyCoral 
+# before the wrapper of the TensorFlow Lite interpreter.
+
+import tflite_runtime.interpreter as tflite     # import wrapper of PyCoral interpreter
 from neurio.devices.google.coral import EdgeTPU
 
 model = ...

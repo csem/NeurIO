@@ -172,7 +172,15 @@ class STM32(Device):
 
         # load the dataset
         inputs = self.inputs
-        predictions, profiler = self.runner.invoke(inputs)
+        try:
+            predictions, profiler = self.runner.invoke(inputs)
+        except:
+            # runner not connected, reconnect
+            self.__connect_runner()
+            time.sleep(2)
+            predictions, profiler = self.runner.invoke(inputs)
+
+
         self.tmp_predictions = predictions
         self.tmp_profiler = profiler
 
