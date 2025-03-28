@@ -5,51 +5,62 @@ Author: Simon Narduzzi
 Email: simon.narduzzi@csem.ch
 Copyright: CSEM, 2025
 Creation: 27.03.2025
-Description: TODO
+Description: This class can be used with the PPK2 Kit to check that it generates correct plots.
 """
-
-
-import pytest
 import time
-from ppk2_api.ppk2_api import PPK2_MP
-from neurio.devices.monitors.power_monitor_mp import PowerProfilerKitII
-
-import unittest
-from unittest.mock import patch, MagicMock
-import threading
+from neurio.devices.monitors.power_monitor import PowerProfilerKitII
 import numpy as np
+import pytest
+import os
 
-class TestPowerProfilerKitII(unittest.TestCase):
+class TestPPK2Plot:
 
-    def test_recording(self):
+    # Only execute this test if the PPK2 is connected to the computer
+    @pytest.mark.skipif(not os.path.exists("/dev/tty.usbmodemF89AE991B16A2"), reason="PPK2 not connected")
+    def test_ppk2(self):
         port = "/dev/tty.usbmodemF89AE991B16A2"
-        ppk2_test = PPK2_MP(port, buffer_max_size_seconds=2)
-        modifiers = ppk2_test.get_modifiers()
-        print(f"Modifiers: {modifiers}")
-        ppk2_test.use_source_meter()  # set source meter mode
-        ppk2_test.set_source_voltage(5000)  # set source voltage in mV
-        ppk2_test.start_measuring()  # start measuring
-        print("Measuring started")
+        ppk2 = PowerProfilerKitII(port=port, source_voltage=5000, baudrate=115200)
+        ppk2.toggle_power("ON")
+        time.sleep(5.0)
+        ppk2.start("PHASE1")
+        time.sleep(30)  # simulate algorithm
+        ppk2.stop()
 
-        # read measured values in a for loop like this:
-        samples = [-1]
-        for i in range(0, 10):
-            read_data = ppk2_test.get_data()
-            if read_data != b'':
-                samples = ppk2_test.get_samples(read_data)
-                print(f"Average of {len(samples)} samples is: {np.sum(samples) / len(samples)}uA")
-            print(i)
-            print(time.time().__str__(), np.sum(samples)/len(samples))
-            time.sleep(0.1)
+        import matplotlib.pyplot as plt
 
-        ppk2_test.stop_measuring()
+        recording = ppk2.recordings[0]
+        times = [s['time'] for s in recording['samples']]
+        values = [s['value'] for s in recording['samples']]
+
+        plt.plot(times, values)
+        plt.xlabel("Time (s)")
+        plt.ylabel("Current (uA)")
+        plt.title("PPK2 Measurement")
+        plt.show()
+
+        print("Average current: ", np.mean(values))
+        time.sleep(2)
+
+        # record again
+        ppk2.start("Phase2")
+        time.sleep(10)  # simulate algorithm
+        ppk2.stop()
+
+        recording = ppk2.recordings[1]
+        times = [s['time'] for s in recording['samples']]
+        values = [s['value'] for s in recording['samples']]
+
+        plt.plot(times, values)
+        plt.xlabel("Time (s)")
+        plt.ylabel("Current (uA)")
+        plt.title("PPK2 Measurement")
+        plt.show()
+
+        print("Average current: ", np.mean(values))
+        time.sleep(3)
+        ppk2.toggle_power("OFF")
+
+        # pass the test
+        assert True
 
 
-    def test_normal(self):
-        port = "/dev/tty.usbmodemF89AE991B16A2"
-        ppk2_test = PowerProfilerKitII(port, source_voltage=5000)
-        ppk2_test.start('test_phase')
-        time.sleep(5)
-        ppk2_test.stop()
-
-        print(ppk2_test.recordings)
