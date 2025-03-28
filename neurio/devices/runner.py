@@ -11,6 +11,7 @@ import numpy as np
 from neurio.devices.device import Device
 from neurio.benchmarking.profiler import Profiler
 from neurio.exceptions import DeviceNotReadyException
+from tqdm import tqdm
 
 
 class Runner:
@@ -92,7 +93,7 @@ class Runner:
         all_predictions = []
         all_profilers = []
 
-        for i in range(len(input_x) // batch_size):
+        for i in tqdm(range(len(input_x) // batch_size)):
             self.phase = "subsample_data"
             batch = self.__subsample_data__(input_x, batch_size, i)
 

@@ -48,6 +48,18 @@ class PowerProfilerKitII:
         """
         self.kit.set_source_voltage(int)
 
+    def set_mode(self, mode):
+        """
+        Set the mode of the Power Profiler Kit II.
+        """
+        if mode not in ["ampere", "source"]:
+            raise Exception(f'Unknown mode {mode}')
+        if mode == "ampere":
+            self.kit.use_ampere_meter()
+        elif mode == "source":
+            self.kit.use_source_meter()
+        self.mode = mode
+
     def toggle_power(self, state):
         """
         Toggle the power of the Power Profiler Kit II.
@@ -59,6 +71,7 @@ class PowerProfilerKitII:
 
     def __connect__(self):
         ppk2s_connected = PPK2_API.list_devices()
+        print("PPK2s connected: ", ppk2s_connected)
         if (len(ppk2s_connected) == 1):
             ppk2_port = ppk2s_connected[0]
             if self.verbose > 0: print(f'Found PPK2 at {ppk2_port}')
@@ -91,7 +104,7 @@ class PowerProfilerKitII:
         self.buffer = []
         self.phase = None
         self.failed = False
-        time.sleep(2.0)
+        time.sleep(1.0)
 
     def __record__(self):
         """
