@@ -7,6 +7,7 @@ Copyright: CSEM, 2023
 Creation: 05.01.2024
 Description: TODO
 """
+import shutil
 import warnings
 import tensorflow as tf
 from neurio.devices.device import Device
@@ -59,22 +60,51 @@ class STM32(Device):
 
     def __prepare_model__(self, model, **kwargs):
         self.original_model = model
+        if "quantize" in kwargs:
+            self.quantize = kwargs["quantize"]
+        else:
+            self.quantize = False
+
         #self.model_path = os.path.join(self.log_dir, "original_model.h5")
         #self.original_model.save(self.model_path)
-        # convert to tflite:
+        # convert to tflite
         self.tflite_model_path = os.path.join(self.log_dir, "tflite_model.tflite")
-        converter = tf.lite.TFLiteConverter.from_keras_model(model)
-        tflite_model = converter.convert()
-        with open(self.tflite_model_path, "wb") as f:
-            f.write(tflite_model)
-        self.model_path = self.tflite_model_path
+        if isinstance(model, str) and model.endswith(".tflite"):
+            # no need for conversion
+            shutil.copy(model, self.tflite_model_path)
+            print("Model is already in tflite format. Copying it to log directory")
+            self.model_path = self.tflite_model_path
+
+        elif isinstance(model, str) and model.endswith(".h5"):
+            # load model from keras
+            model = tf.keras.models.load_model(model)
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            tflite_model = converter.convert()
+            with open(self.tflite_model_path, "wb") as f:
+                f.write(tflite_model)
+            self.model_path = self.tflite_model_path
+
+        elif isinstance(model, str) and model.endswith(".onnx"):
+            self.tflite_model_path = os.path.join(self.log_dir, "onnx_model.onnx")
+            shutil.copy(model, self.tflite_model_path)
+            print("Model is in onnx format. Copying it to log directory")
+            self.model_path = self.tflite_model_path
+
+        elif isinstance(model, tf.keras.Model):
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            tflite_model = converter.convert()
+            with open(self.tflite_model_path, "wb") as f:
+                f.write(tflite_model)
+            self.model_path = self.tflite_model_path
+        else:
+            raise Exception("Unknown model format")
 
 
     def __generate_network_code__(self):
         # generate code for the network
         if self.verbose > 0:
             print("Generating model c files: {}".format(self.model_path))
-        compression = None
+        compression = "high" if self.quantize else None
         command = " ".join(
             ["{} generate".format(self.stm32ai_exec), '-m', '{}'.format(self.model_path), '-o',
              '{}/{}'.format(ASSETS_DIR, skeleton_projects[self.device_identifier]["project"])])
@@ -156,7 +186,7 @@ class STM32(Device):
         runner = AiRunner(debug=True)
         # Connect to device
         if not runner.connect(self.port):
-            raise RuntimeError('runtime "{}" is not connected'.format(self.port))
+            raise RuntimeError('Error when connecting "{}": {}'.format(self.port, runner._last_err))
         print(runner, flush=True)
         runner.summary()
         self.runner = runner
@@ -175,6 +205,7 @@ class STM32(Device):
         try:
             predictions, profiler = self.runner.invoke(inputs)
         except:
+            print("[NeurIO ERROR]: {}".format(self.runner._last_err))
             # runner not connected, reconnect
             self.__connect_runner()
             time.sleep(2)
