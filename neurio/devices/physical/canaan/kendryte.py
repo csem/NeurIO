@@ -95,7 +95,7 @@ class K210(Device):
             "FLOPs": -1,
         }
 
-        self.device = {"name": "Kendryte K210",
+        self.device_desc = {"name": "Kendryte K210",
                         "port": self.port,
                         "dev_type": "AI SoC",
                         "desc": "Sipeed MaixPy Kendryte K210",
@@ -362,7 +362,7 @@ class K210(Device):
                 reset_line = self.rshell_session.before.decode().strip()
                 device_freq = self.__parse_freq_from_reset_log(reset_line.split("init end")[0])
                 # update device information
-                self.device["attrs"].append(device_freq)
+                self.device_desc["attrs"].append(device_freq)
                 print(reset_line)
             self.rshell_session.expect("information.", timeout=20)
             time.sleep(0.5)
