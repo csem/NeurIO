@@ -45,6 +45,9 @@ class Device():
             self.log_dir = os.path.join(os.getcwd(), datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
 
         self.is_ready_for_inference = False
+        self.model_desc = None
+        self.device_desc = None
+        self.runtime = None
 
     # SYSTEM PREPARATION
     @abstractmethod
@@ -181,6 +184,10 @@ class Device():
         # merge predictions
         y_pred = np.concatenate(all_predictions, axis=0)
         profiler = Profiler.merge(all_profilers)
+
+        profiler["model"] = self.model_desc
+        profiler["device"] = self.device_desc
+        profiler["runtime"] = self.runtime
 
         return y_pred, profiler
 
