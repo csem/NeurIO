@@ -14,7 +14,7 @@ import sys
 
 sys.path.append("../../")
 sys.path.append("../../../../")
-from neurio.common import Prediction, Profiler
+from neurio.benchmarking.profiler import Profiler
 from neurio.devices.device import Device
 import os
 from tqdm import tqdm
@@ -27,6 +27,7 @@ from neurio.exceptions import InvalidImageRangeError
 import tensorflow as tf
 import time
 import pexpect
+import re
 
 NNCASE_VERSION = "1.9.0"
 python_version = sys.version_info
@@ -40,11 +41,11 @@ class K210(Device):
         self.original_model = None
         self.kmodel = None
         self.tflite_model = None
-        self.baudrate = baudrate
         self.verbose = kwargs.get("verbose", 0)
         self.device_storage_location = kwargs.get("device_storage_location", "/sd")
         self.rshell_session = None
-        self.rshell_session = self.__create_rshell_session__(port, self.baudrate)
+        self.baudrate = baudrate
+        self.rshell_session = self.__create_rshell_session__(port, baudrate)
         self.code_dir = os.path.join(self.log_dir, "code")
         os.makedirs(self.code_dir, exist_ok=True)
 
@@ -80,6 +81,39 @@ class K210(Device):
         self.input_shapes = model.input_shape
         self.output_shapes = model.output_shape
 
+
+
+        self.model_desc = {
+            "model_name": model.name,
+            "framework": "Keras",
+            "model_datetime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "compile_datetime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "inputs": self.input_shapes,
+            "outputs": self.output_shapes,
+            "parameters": model.count_params(),
+            "macc": -1,
+            "FLOPs": -1,
+        }
+
+        self.device = {"name": "Kendryte K210",
+                        "port": self.port,
+                        "dev_type": "AI SoC",
+                        "desc": "Sipeed MaixPy Kendryte K210",
+                        "dev_id": None,
+                        "system": "MicroPython",
+                        "sys_clock": None,
+                        "bus_clock": None,
+                        "attrs": []
+                        }
+
+        self.runtime = {"name": "MaixPy MicroPython",
+                        "version": None,
+                        "tools_version": {
+                                "nncase": NNCASE_VERSION,
+                                "python": PYTHON_VERSION
+                            }
+                        }
+
     def __generate_inference_code__(self):
         """
         Generate the inference code for the device.
@@ -92,8 +126,8 @@ class K210(Device):
             file = f.read()
 
         file = file.replace("DEBUG = True", "DEBUG = {}".format(str(self.verbose).title()))
-        file = file.replace("IMG_WIDTH = 224", "IMG_WIDTH = {}".format(self.input_shapes[0]))
-        file = file.replace("IMG_HEIGHT = 224", "IMG_HEIGHT = {}".format(self.input_shapes[1]))
+        file = file.replace("IMG_WIDTH = 224", "IMG_WIDTH = {}".format(self.input_shapes[1]))
+        file = file.replace("IMG_HEIGHT = 224", "IMG_HEIGHT = {}".format(self.input_shapes[2]))
         file = file.replace("KPU_OUTPUT = [0, 1, 1, 5]", "KPU_OUTPUT = {}".format(self.output_shapes))
 
         # sfile = file.replace('SD_FOLDER_DATA = "/sd/data"', 'SD_FOLDER_DATA = "{}"'.format("/sd/img"))
@@ -138,9 +172,11 @@ class K210(Device):
         self.__execute_command_sync__(
             "cp {} {}/".format(os.path.join(self.code_dir, "benchmark.py"),
                                 self.device_storage_location), 120)
+                               #"/sd"), 120)
         self.__execute_command_sync__(
-            "cp {} {}/".format(os.path.join(self.code_dir, "prepare.py"), self.device_storage_location),
-            120)
+            "cp {} {}/".format(os.path.join(self.code_dir, "prepare.py"),
+                                self.device_storage_location),120)
+                                # "/sd"), 120)
 
     def __prepare_data__(self, input_x, **kwargs):
 
@@ -264,6 +300,31 @@ class K210(Device):
         device_json_filename = "{}/inference.json".format(self.device_storage_location)
         self.__execute_command_sync__('cp {} {}\n'.format(json_filename, device_json_filename), timeout=20)
 
+
+    def __parse_freq_from_reset_log(self, log):
+        data = {}
+
+        # Extract frequencies
+        freq_matches = re.findall(r'(\w+):freq:(\d+)', log)
+        for name, freq in freq_matches:
+            data[f"{name}_freq"] = int(freq)
+
+        # Extract flash ID
+        flash_match = re.search(r'Flash:(0x[0-9a-fA-F]+):(0x[0-9a-fA-F]+)', log)
+        if flash_match:
+            data['flash_manufacturer_id'] = flash_match.group(1)
+            data['flash_device_id'] = flash_match.group(2)
+
+        # Extract GC heap info
+        heap_match = re.search(r'gc heap=(0x[0-9a-fA-F]+)-(0x[0-9a-fA-F]+)\((\d+)\)', log)
+        if heap_match:
+            data['gc_heap_start'] = heap_match.group(1)
+            data['gc_heap_end'] = heap_match.group(2)
+            data['gc_heap_size'] = int(heap_match.group(3))
+
+        print(data)
+        return data
+
     def __run_inference__(self, profile: bool = True):
         """
         Triggers the inference on the device.
@@ -297,11 +358,20 @@ class K210(Device):
             # if no problem
             if self.verbose > 0: print("Done")
             self.rshell_session.expect("MicroPython", timeout=20)  # wait for restart
-            if self.verbose > 0: print(self.rshell_session.before.decode().strip())
+            if self.verbose > 0:
+                reset_line = self.rshell_session.before.decode().strip()
+                device_freq = self.__parse_freq_from_reset_log(reset_line.split("init end")[0])
+                # update device information
+                self.device["attrs"].append(device_freq)
+                print(reset_line)
             self.rshell_session.expect("information.", timeout=20)
             time.sleep(0.5)
             # exit REPL
-            if self.verbose > 0: print(self.rshell_session.before.decode().strip())
+            details_line = self.rshell_session.before.decode().strip()
+
+            self.runtime["version"] = details_line.split(";")[0]
+
+            if self.verbose > 0: print(details_line)
             self.rshell_session.sendcontrol("X")  # ctrl+x
             expected_patterns = ['/[^>]*>', '/sd>[^>]*', '/flash>[^>]*']
             pattern_index = self.rshell_session.expect(expected_patterns, timeout=20)
@@ -392,10 +462,15 @@ class K210(Device):
             y_pred.append(y_p)
 
         # predictions and Profiler
+        profiler_filer = os.path.join(self.log_dir, "profiler.json")
+        with open(profiler_filer, "w") as f:
+            json.dump({}, f)
+
         temp_profiler = Profiler()
-        temp_profiler.inference_times = inference_times
-        temp_profiler.load_times = load_times
-        temp_profiler.preprocess_times = preprocess_times
+        temp_profiler["inference"]["batch_size"] = len(inference_times)
+        temp_profiler["inference"]["inference_time"] = inference_times
+        temp_profiler["inference"]["model_load_time"] = load_times
+        temp_profiler["inference"]["preprocess_time"] = preprocess_times
 
         return y_pred, temp_profiler
 
@@ -441,24 +516,32 @@ class K210(Device):
         if in_repl:
             # send reset and quit repl
             cmd = "import machine"
-            if self.verbose > 0: print("[RSHELL] {}".format(cmd))
+            if self.verbose > 0:
+                print("[RSHELL] {}".format(cmd))
             self.rshell_session.sendline(cmd)
             self.rshell_session.expect(">", timeout=10)
-            if self.verbose > 0: print(self.rshell_session.before.decode().strip())
+            if self.verbose > 0:
+                print(self.rshell_session.before.decode().strip())
 
             cmd = "machine.reset()"
-            if self.verbose > 0: print("[RSHELL] {}".format(cmd))
+            if self.verbose > 0:
+                print("[RSHELL] {}".format(cmd))
             self.rshell_session.sendline(cmd)
             self.rshell_session.expect(">", timeout=10)
-            if self.verbose > 0: print(self.rshell_session.before.decode().strip())
+            if self.verbose > 0:
+                print(self.rshell_session.before.decode().strip())
 
             time.sleep(1.0)  # ctrl+x
             self.rshell_session.sendcontrol("X")  # ctrl+x
             self.rshell_session.expect(">", timeout=10)
-            if self.verbose > 0: print(self.rshell_session.before.decode().strip())
+            if self.verbose > 0:
+                print(self.rshell_session.before.decode().strip())
             time.sleep(1.0)
 
-            if self.verbose > 0: print("Device reset.")
+            if self.verbose > 0:
+                print("Device reset.")
+
+            # use reset to get information for the profiler
 
     def __create_rshell_session__(self, port, baudrate=115200):
         """
@@ -511,3 +594,11 @@ class K210(Device):
 
     def __str__(self):
         pass
+
+
+    def config(self):
+        """
+        Get the configuration of the device.
+        :return: the configuration of the device
+        """
+        return self.device
