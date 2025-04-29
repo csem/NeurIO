@@ -35,15 +35,16 @@ PYTHON_VERSION = "{}.{}.{}".format(python_version.major, python_version.minor, p
 
 class K210(Device):
 
-    def __init__(self, port: any, name: str = "k210", log_dir: str = None, **kwargs):
+    def __init__(self, port: any, name: str = "k210", log_dir: str = None, baudrate=115200, **kwargs):
         super().__init__(port, name, log_dir, **kwargs)
         self.original_model = None
         self.kmodel = None
         self.tflite_model = None
+        self.baudrate = baudrate
         self.verbose = kwargs.get("verbose", 0)
         self.device_storage_location = kwargs.get("device_storage_location", "/sd")
         self.rshell_session = None
-        self.rshell_session = self.__create_rshell_session__(port)
+        self.rshell_session = self.__create_rshell_session__(port, self.baudrate)
         self.code_dir = os.path.join(self.log_dir, "code")
         os.makedirs(self.code_dir, exist_ok=True)
 
@@ -459,14 +460,14 @@ class K210(Device):
 
             if self.verbose > 0: print("Device reset.")
 
-    def __create_rshell_session__(self, port):
+    def __create_rshell_session__(self, port, baudrate=115200):
         """
         Create a rshell session to the device.
 
         :param port: the port to which the device is connected
         :return: a pexpect session from the rshell package, that can be used as pipe to send commands to the device
         """
-        command = "rshell -p {}".format(port)
+        command = "rshell -p {} -b {}".format(port, baudrate)
         child = pexpect.spawn(command)
         try:
             child.expect("connected", timeout=20)
