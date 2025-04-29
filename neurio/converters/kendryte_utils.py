@@ -68,7 +68,11 @@ def install_ncc_python(version: str = "1.7.1", python: str = "38"):
         except Exception as e:
             print("Error downloading file", file_download)
             raise e
-        os.system("python3 -m pip install {}".format(save_file))
+
+    # get current path of python executable
+    python_path = os.path.dirname(sys.executable)
+    # check if pip is installed
+    os.system("{}/python3 -m pip install {}".format(python_path, save_file))
 
 
 
