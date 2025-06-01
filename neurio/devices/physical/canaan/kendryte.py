@@ -37,7 +37,7 @@ PYTHON_VERSION = "{}.{}.{}".format(python_version.major, python_version.minor, p
 class K210(Device):
 
     def __init__(self, port: any, name: str = "k210", log_dir: str = None, baudrate=115200, **kwargs):
-        super().__init__(port, name, log_dir, **kwargs)
+        super().__init__(port=port, name=name, log_dir=log_dir, **kwargs)
         self.original_model = None
         self.kmodel = None
         self.tflite_model = None
@@ -48,6 +48,17 @@ class K210(Device):
         self.rshell_session = self.__create_rshell_session__(port, baudrate)
         self.code_dir = os.path.join(self.log_dir, "code")
         os.makedirs(self.code_dir, exist_ok=True)
+        # create folders to store images
+        self.data_dir = os.path.join(self.log_dir, "data")
+        os.makedirs(self.data_dir, exist_ok=True)
+        # create folders to store results
+        self.results_dir = os.path.join(self.log_dir, "results")
+        os.makedirs(self.results_dir, exist_ok=True)
+        # create folders to store models and calibration data
+        self.models_dir = os.path.join(self.log_dir, "models")
+        os.makedirs(self.models_dir, exist_ok=True)
+        self.calibration_dir = os.path.join(self.log_dir, "calibration")
+        os.makedirs(self.calibration_dir, exist_ok=True)
 
     def __prepare_model__(self, model: tf.keras.models.Model, **kwargs):
         """
@@ -56,10 +67,6 @@ class K210(Device):
         :param model: Model to be prepared
         :param kwargs: Other parameters
         """
-        self.models_dir = os.path.join(self.log_dir, "models")
-        os.makedirs(self.models_dir, exist_ok=True)
-        self.calibration_dir = os.path.join(self.log_dir, "calibration")
-        os.makedirs(self.calibration_dir, exist_ok=True)
         # save calibration directory passed in kwargs
         if "calibration_data" in kwargs:
             for data in kwargs["calibration_data"]:
@@ -95,7 +102,7 @@ class K210(Device):
             "FLOPs": -1,
         }
 
-        self.device = {"name": "Kendryte K210",
+        self.device_desc = {"name": "Kendryte K210",
                         "port": self.port,
                         "dev_type": "AI SoC",
                         "desc": "Sipeed MaixPy Kendryte K210",
@@ -275,10 +282,6 @@ class K210(Device):
         # clean results folder
         self.__execute_command_sync__('rm -rf {}/results.txt\n'.format(self.device_storage_location), timeout=20)
 
-        # create folders to store images
-        self.data_dir = os.path.join(self.log_dir, "data")
-        os.makedirs(self.data_dir, exist_ok=True)
-
         json_data = {}
         for i in range(len(input_x)):
             img = input_x[i]
@@ -362,7 +365,7 @@ class K210(Device):
                 reset_line = self.rshell_session.before.decode().strip()
                 device_freq = self.__parse_freq_from_reset_log(reset_line.split("init end")[0])
                 # update device information
-                self.device["attrs"].append(device_freq)
+                self.device_desc["attrs"].append(device_freq)
                 print(reset_line)
             self.rshell_session.expect("information.", timeout=20)
             time.sleep(0.5)
@@ -478,10 +481,6 @@ class K210(Device):
         """
         Download the results of the inference from the device to the local storage.
         """
-
-        self.results_dir = os.path.join(self.log_dir, "results")
-        os.makedirs(self.results_dir, exist_ok=True)
-
         cmd = "ls /flash"
         if self.verbose > 0: print("[RSHELL] {}".format(cmd))
         self.rshell_session.sendline(cmd)
@@ -596,9 +595,76 @@ class K210(Device):
         pass
 
 
-    def config(self):
+    def get_config(self):
         """
         Get the configuration of the device.
-        :return: the configuration of the device
+        :return: a serializable dictionary with the device configuration.
         """
-        return self.device
+        config = {
+            "port": self.port,
+            "name": self.name,
+            "log_dir": self.log_dir,
+            "baudrate": self.baudrate,
+            "models_dir": self.models_dir,
+            "calibration_dir": self.calibration_dir,
+            "code_dir": self.code_dir,
+            "data_dir": self.data_dir,
+            "results_dir": self.results_dir,
+            "kmodel": self.kmodel,
+            "rshell_session": None,  # cannot be serialized
+            "device_type": self.__class__.__name__,
+            "device_desc": self.device_desc,
+            "model_desc": self.model_desc,
+            "runtime": self.runtime,
+            "input_shapes": self.input_shapes,
+            "output_shapes": self.output_shapes,
+            "kmodel_path": self.kmodel_path,
+            "tflite_model": self.tflite_model,
+            "verbose": self.verbose,
+            "device_storage_location": self.device_storage_location,
+            "original_model": self.original_model,
+            "is_ready_for_inference": self.is_ready_for_inference,
+        }
+        return config
+
+    @classmethod
+    def from_config(cls, config: dict):
+        """
+        Instantiate the device from a configuration dictionary, which is typically the output of the config() method.
+        :param config: a serializable dictionary with the device configuration.
+        """
+
+        cls_object = cls(port=config["port"], name=config["name"], log_dir=config["log_dir"],
+                                    baudrate=config.get("baudrate", 115200), verbose=config.get("verbose", 0))
+
+        # set the attributes of the object
+        cls_object.models_dir = config["models_dir"]
+        cls_object.calibration_dir = config["calibration_dir"]
+        cls_object.code_dir = config["code_dir"]
+        cls_object.data_dir = config["data_dir"]
+        cls_object.results_dir = config["results_dir"]
+        cls_object.original_model = config["original_model"]
+        cls_object.kmodel = config["kmodel"]
+        cls_object.kmodel_path = config["kmodel_path"]
+        cls_object.tflite_model = config["tflite_model"]
+        cls_object.rshell_session = config["rshell_session"]
+        cls_object.device_type = config["device_type"]
+        cls_object.device_desc = config["device_desc"]
+        cls_object.model_desc = config["model_desc"]
+        cls_object.runtime = config["runtime"]
+        cls_object.input_shapes = config["input_shapes"]
+        cls_object.output_shapes = config["output_shapes"]
+        cls_object.kmodel_path = config["kmodel_path"]
+        cls_object.tflite_model = config["tflite_model"]
+        cls_object.verbose = config.get("verbose", 0)
+        cls_object.device_storage_location = config.get("device_storage_location", "/sd")
+        cls_object.original_model = config.get("original_model", None)
+        cls_object.is_ready_for_inference = config.get("is_ready_for_inference", False)
+        # if rshell_session is not None, recreate the session
+        if cls_object.rshell_session is None:
+            cls_object.rshell_session = cls_object.__create_rshell_session__(cls_object.port, cls_object.baudrate)
+
+        # instantiate the object
+        return cls_object
+
+
