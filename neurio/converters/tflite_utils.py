@@ -7,7 +7,7 @@ Copyright: CSEM, 2022
 Creation: 21.09.22
 Description: Convert Keras model to TFLite
 """
-import os.path
+import os
 
 import keras
 import tensorflow as tf
