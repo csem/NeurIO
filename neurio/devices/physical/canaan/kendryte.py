@@ -16,18 +16,19 @@ sys.path.append("../../")
 sys.path.append("../../../../")
 from neurio.benchmarking.profiler import Profiler
 from neurio.devices.device import Device
+from neurio.converters.model_converters import ModelConverter
 import os
 from tqdm import tqdm
 import numpy as np
 import json
 from PIL import Image
 from neurio.converters.kendryte_utils import convert_to_kmodel
-from neurio.converters.tflite_utils import keras_to_tflite
 from neurio.exceptions import InvalidImageRangeError
 import tensorflow as tf
 import time
 import pexpect
 import re
+from typing import Union
 
 NNCASE_VERSION = "1.9.0"
 python_version = sys.version_info
@@ -60,7 +61,7 @@ class K210(Device):
         self.calibration_dir = os.path.join(self.log_dir, "calibration")
         os.makedirs(self.calibration_dir, exist_ok=True)
 
-    def __prepare_model__(self, model: tf.keras.models.Model, **kwargs):
+    def __prepare_model__(self, model: Union[tf.keras.models.Model, str], **kwargs):
         """
         Prepare the model for deployment. This includes converting it to a tflite model and then to a kmodel.
 
@@ -73,7 +74,7 @@ class K210(Device):
                 img, label = data
                 img.save(os.path.join(self.calibration_dir, "{}.bmp".format(label)))
 
-        tflite_model = keras_to_tflite(model, tflite_path=os.path.join(self.models_dir, model.name + ".tflite"))
+        tflite_model = ModelConverter.convert(model, output_format="tflite", output_path=os.path.join(self.models_dir, model.name + ".tflite"))
         compilation_options = {"target": "k210",
                                "dataset": os.path.abspath(self.calibration_dir)}
 
