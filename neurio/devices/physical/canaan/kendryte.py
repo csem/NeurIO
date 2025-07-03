@@ -74,7 +74,14 @@ class K210(Device):
                 img, label = data
                 img.save(os.path.join(self.calibration_dir, "{}.bmp".format(label)))
 
-        tflite_model = ModelConverter.convert(model, output_format="tflite", output_path=os.path.join(self.models_dir, model.name + ".tflite"))
+        if isinstance(model, str):
+            model_name = "_".join(os.path.basename(model).split(".")[:-1])
+        elif isinstance(model, tf.keras.models.Model):
+            model_name = model.name
+        else:
+            raise ValueError("Model must be a Keras model or a path to a Keras model file.")
+
+        tflite_model = ModelConverter.convert(model, output_format="tflite", output_path=os.path.join(self.models_dir, model_name + ".tflite"))
         compilation_options = {"target": "k210",
                                "dataset": os.path.abspath(self.calibration_dir)}
 
@@ -655,7 +662,6 @@ class K210(Device):
         cls_object.runtime = config["runtime"]
         cls_object.input_shapes = config["input_shapes"]
         cls_object.output_shapes = config["output_shapes"]
-        cls_object.kmodel_path = config["kmodel_path"]
         cls_object.tflite_model = config["tflite_model"]
         cls_object.verbose = config.get("verbose", 0)
         cls_object.device_storage_location = config.get("device_storage_location", "/sd")

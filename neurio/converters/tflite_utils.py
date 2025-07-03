@@ -8,12 +8,9 @@ Creation: 21.09.22
 Description: Convert Keras model to TFLite
 """
 import os
-
 import keras
 import tensorflow as tf
 from typing import Union
-
-import tf2onnx
 from onnx_tf.backend import prepare
 import onnx
 

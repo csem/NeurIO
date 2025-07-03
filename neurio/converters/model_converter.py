@@ -22,7 +22,7 @@ class ModelConverter:
         pass
 
     @staticmethod
-    def convert(model=Union[keras.Model, str], output_format: str = "tflite", output_path: str = None, **kwargs) -> str:
+    def convert(model: Union[keras.Model, str], output_format: str = "tflite", output_path: str = None, **kwargs) -> str:
         """
         Convert a model to the desired format.
 
