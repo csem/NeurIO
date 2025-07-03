@@ -13,6 +13,10 @@ import tensorflow as tf
 from typing import Union
 from onnx_tf.backend import prepare
 import onnx
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def keras_to_tflite(keras_model: Union[keras.Model, str], tflite_path: str, custom_objects: dict = {}) -> str:
     if isinstance(keras_model, str) and keras_model.endswith(".tflite"):
@@ -75,5 +79,5 @@ def onnx_to_tflite(onnx_file: str, tflite_path: str = None) -> str:
         # Save the TFLite model
         with open(tflite_path, "wb") as f:
             f.write(tflite_model)
-        print(f"TFLite model saved to {tflite_path}")
+        logger.info(f"TFLite model saved to {tflite_path}")
         return tflite_path

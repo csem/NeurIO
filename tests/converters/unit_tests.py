@@ -55,6 +55,12 @@ def test_convert_keras_h5_file_to_tflite(mock_convert, converter):
     mock_convert.assert_called_once_with("model.h5", "model.tflite")
     assert result == "model.tflite"
 
+def test_tflite_unchanged(converter):
+    result = converter.convert(model="model.tflite", output_path="model.tflite")
+    assert result == "model.tflite"
+    # No conversion should be attempted, so no mock calls
+    assert not hasattr(converter, 'keras_to_tflite') and not hasattr(converter, 'onnx_to_tflite')
+
 def test_unsupported_input_format_raises(converter):
     with pytest.raises(ValueError, match="Unsupported model file format"):
         converter.convert(model="model.pb", output_path="model.tflite")

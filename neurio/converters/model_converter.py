@@ -1,4 +1,4 @@
-#!/user/bin/env python
+#!/usr/bin/env python
 
 """
 Author: Simon Narduzzi
@@ -8,15 +8,19 @@ Creation: 21.09.22
 Description: Converter for models
 """
 import os
-
 import keras
 from neurio.converters import tflite_utils
 from typing import Union
+import logging
 
+logger = logging.getLogger(__name__)
 SUPPORTED_FORMATS = ['tflite']  # TODO add onnx, keras, tensorflow, pytorch, etc.
 
 class ModelConverter:
-    """A universal converter that accepts different model formats and converts them to the desired output format"""
+    """
+    A universal converter that accepts different model formats
+    and converts them to the desired output format
+    """
 
     def __init__(self):
         pass
@@ -27,7 +31,7 @@ class ModelConverter:
         Convert a model to the desired format.
 
         :param model: The model to convert. It can be a Keras model or a path to a model file (onnx, tflite, tensorflow, keras).
-        :param output_format: The format to convert the model to (e.g., 'tflite', 'onnx', 'keras', 'tensorflow', 'pytorch').
+        :param output_format: The format to convert the model to (currently, only supports 'tflite').
         :param output_path: The path where the converted model will be saved.
         :param kwargs: Additional parameters for the conversion.
         :return: The path to the converted model.
