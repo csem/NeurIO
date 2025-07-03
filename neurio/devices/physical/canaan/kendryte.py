@@ -662,7 +662,6 @@ class K210(Device):
         cls_object.runtime = config["runtime"]
         cls_object.input_shapes = config["input_shapes"]
         cls_object.output_shapes = config["output_shapes"]
-        cls_object.tflite_model = config["tflite_model"]
         cls_object.verbose = config.get("verbose", 0)
         cls_object.device_storage_location = config.get("device_storage_location", "/sd")
         cls_object.original_model = config.get("original_model", None)
