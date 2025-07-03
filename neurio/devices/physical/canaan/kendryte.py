@@ -16,7 +16,7 @@ sys.path.append("../../")
 sys.path.append("../../../../")
 from neurio.benchmarking.profiler import Profiler
 from neurio.devices.device import Device
-from neurio.converters.model_converters import ModelConverter
+from neurio.converters.model_converter import ModelConverter
 import os
 from tqdm import tqdm
 import numpy as np
