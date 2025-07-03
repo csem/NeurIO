@@ -667,5 +667,3 @@ class K210(Device):
 
         # instantiate the object
         return cls_object
-
-
