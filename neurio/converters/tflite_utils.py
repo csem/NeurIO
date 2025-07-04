@@ -14,6 +14,7 @@ from typing import Union
 from onnx_tf.backend import prepare
 import onnx
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -81,3 +82,20 @@ def onnx_to_tflite(onnx_file: str, tflite_path: str = None) -> str:
             f.write(tflite_model)
         logger.info(f"TFLite model saved to {tflite_path}")
         return tflite_path
+
+
+def count_tflite_params(model_path):
+    """
+    Count the number of parameters in a TFLite model.
+    :param model_path: the path to the TFLite model file.
+    :return: an integer representing the number of parameters in the model.
+    """
+    interpreter = tf.lite.Interpreter(model_path=model_path)
+    interpreter.allocate_tensors()
+
+    param_count = 0
+    for detail in interpreter.get_tensor_details():
+        shape = detail['shape']
+        if shape.size > 0:
+            param_count += np.prod(shape)
+    return int(param_count)
