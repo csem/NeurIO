@@ -23,6 +23,7 @@ import numpy as np
 import json
 from PIL import Image
 from neurio.converters.kendryte_utils import convert_to_kmodel
+from neurio.converters.tflite_utils import count_tflite_params
 from neurio.exceptions import InvalidImageRangeError
 import tensorflow as tf
 import time
@@ -93,19 +94,44 @@ class K210(Device):
         self.kmodel_path = os.path.abspath(kmodel_file)
 
         # get input and output shapes of the model
-        self.input_shapes = model.input_shape
-        self.output_shapes = model.output_shape
+        parameters = -1
+        if isinstance(model, tf.keras.Model):
+            self.input_shapes = model.input_shape
+            self.output_shapes = model.output_shape
+            # parameters
+            parameters = model.count_params()
+        elif isinstance(model, str) and model.endswith(".tflite"):
+            interpreter = tf.lite.Interpreter(model_path=model)
+            interpreter.allocate_tensors()
+            input_details = interpreter.get_input_details()
+            output_details = interpreter.get_output_details()
+            self.input_shapes = [input_detail['shape'] for input_detail in input_details]
+            self.output_shapes = [output_detail['shape'] for output_detail in output_details]
 
+            if len(self.input_shapes) > 1 or len(self.output_shapes) > 1:
+                raise ValueError("TFLite model must have exactly one input and one output.")
+            self.input_shapes = self.input_shapes[0].tolist()
+            self.output_shapes = self.output_shapes[0].tolist()
 
+            print("Input shapes: {}".format(self.input_shapes))
+            print("Output shapes: {}".format(self.output_shapes))
+            # get number of parameters of the TFLite model
+            parameters = count_tflite_params(model)
+        else:
+            raise ValueError("Model must be a Keras model or a path to a Keras model file.")
+
+        framework = "Keras"
+        if isinstance(model, str):
+            framework = model.split(".")[-1].upper()
 
         self.model_desc = {
-            "model_name": model.name,
-            "framework": "Keras",
+            "model_name": model_name,
+            "framework": framework,
             "model_datetime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "compile_datetime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "inputs": self.input_shapes,
             "outputs": self.output_shapes,
-            "parameters": model.count_params(),
+            "parameters": parameters,
             "macc": -1,
             "FLOPs": -1,
         }
